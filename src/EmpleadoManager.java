@@ -14,7 +14,7 @@ public class EmpleadoManager {
             mf.mkdir();
             //2- Instanciar los archivos RAFs dentro dell folder company
             rcods=new RandomAccessFile("company/codigos.emp","rw");
-            remps=new RandomAccessFile("company/codigos.emp","rw");
+            remps=new RandomAccessFile("company/empleados.emp","rw");
             //3- Inicializar el archivo de codigos, si, es nuevo.
             initCodes();
         }catch(IOException e){
@@ -145,6 +145,29 @@ public class EmpleadoManager {
             }
         }
         return false;
+    }
+    
+    public String infoEmpleado(int codigo) throws IOException{
+        SimpleDateFormat formatoFecha=new SimpleDateFormat("dd/MM/yyyy");
+        remps.seek(0);
+        while (remps.getFilePointer()<remps.length()){
+            int codigoEmpleado=remps.readInt();
+            String nombre=remps.readUTF();
+            double salario=remps.readDouble();
+            long fechaContratacion=remps.readLong();
+            long fechaDespido=remps.readLong();
+
+            if(codigoEmpleado==codigo){
+                if(fechaDespido==0){
+                    String fecha;
+                    fecha=formatoFecha.format(new Date(fechaContratacion));
+                    return "Código: "+codigoEmpleado+"\nNombre: "+nombre+"\nSalario: Lps. "+salario+"\nContratado el: "+fecha+"\nEstatus: Activo";
+                } else {
+                    return "El empleado con código "+codigo+" no está activo";
+                }
+            }
+        }
+        return "El empleado con código "+codigo+" no existe";
     }
     
     public boolean despedirEmpleado(int codigo) throws IOException{
